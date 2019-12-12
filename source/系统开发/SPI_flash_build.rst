@@ -66,15 +66,21 @@ Uboot编译配置
                                 "mtdparts=spi32766.0:1M(uboot)ro,64k(dtb)ro,4M(kernel)ro,-(rootfs) root=31:03 rw rootfstype=jffs2"
 
 
-环境命令解析：
+uboot命令解析：
    - sf probe 0;	//初始化Flash设备（CS拉低）
-   - sf read 0x41800000 0x100000 0x10000; //从flash0x100000（1MB）位置读取dtb放到内存0x41800000偏移处。	//如果是bsp的bin，则是0x41d00000
-   - sf read 0x41000000 0x110000 0x400000; //从flash0x110000（1MB+64KB）位置读取dtb放到内存0x41000000偏移处。
+   - sf read 0x41800000 0x100000 0x10000;   // dtb-从flash的0x100000(1MB)位置读取(0x10000)字节数据到内存 0x41800000 偏移处。	//如果是bsp的bin，则是0x41d00000
+   - sf read 0x41000000 0x110000 0x400000;  // kernel-从flash的0x110000(1MB+64KB)位置读取(0x400000)字节数据到内存 0x41000000 偏移处。
    - bootz 0x41000000 （内核地址）- 0x41800000（dtb地址） 启动内核
 
 启动参数解析
    - console=ttyS0,115200 earlyprintk panic=5 rootwait //在串口0上输出信息
-   - mtdparts=spi32766.0:1M(uboot)ro,64k(dtb)ro,4M(kernel)ro,-(rootfs) root=31:03 rw rootfstype=jffs2	//spi32766.0是设备名，后面是分区大小，名字，读写属性。
+   - mtdparts=spi32766.0:
+   - 1M(uboot)ro  // uboot数据长度
+   - 64k(dtb)ro   // dtb数据长度
+   - 4M(kernel)ro // 内核数据长度
+   - -(rootfs) root=31:03 rw // -号的意思是将剩余的空间全部分配给rootfs.
+   - root=31:03 // root指向mtd3
+   - rootfstype=jffs2	//spi32766.0是设备名，后面是分区大小，名字，读写属性。
    - root=31:03表示根文件系统是mtd3；jffs2格式
 
 编译uboot
